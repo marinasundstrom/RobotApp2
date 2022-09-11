@@ -1,8 +1,12 @@
 # RobotApp 2
 
+Control a robot, walking across a defined grid.
+
 [RobotApp](https://github.com/marinasundstrom/RobotApp) ported to TypeScript/JavaScript.
 
-Built with TypeScript, NodeJS, Express, Socket.IO, HTML, Canvas.
+It is a client-server app built with TypeScript, NodeJS, Express, Socket.IO, HTML, Canvas.
+
+Just as with the original, there is a console version (index2.ts).
 
 ## Screenshot
 
