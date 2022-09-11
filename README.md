@@ -16,19 +16,25 @@ Just as with the original, there is a console version (index2.ts).
 
 Latest NodeJS required.
 
-To build:
+Build the project:
 
 ```sh
 npm build
 ```
 
-To run the program:
+Run the Web app:
 
 ```sh
 npm start
 ```
 
-To run tests:
+Run the Console app:
+
+```sh
+npm run console
+```
+
+Run unit tests:
 
 ```sh
 npm test

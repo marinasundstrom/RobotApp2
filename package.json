@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "start": "node build/index.js",
+    "console": "node build/index2.js",
     "build": "npx tsc",
     "test": "node ./node_modules/mocha/bin/mocha test"
   },
