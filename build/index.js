@@ -1,39 +1,41 @@
-import * as readline from 'node:readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
+import express from 'express';
+const app = express();
+import * as http from 'node:http';
 import World from './world.js';
 import Point from './point.js';
 import Robot, { Instruction, Direction } from "./robot.js";
-const rl = readline.createInterface({ input, output });
-const worldSetup = await rl.question('World:');
-const worldParts = worldSetup.split(' ');
-const width = parseInt(worldParts[0]);
-const depth = parseInt(worldParts[1]);
-const world = new World(width, depth);
-const robotSetup = await rl.question('Robot:');
-const robotParts = robotSetup.split(' ');
-const x = parseInt(robotParts[0]);
-const y = parseInt(robotParts[1]);
-const d = robotParts[2];
-let direction = undefined;
-switch (d) {
-    case "N":
-        direction = Direction.north;
-        break;
-    case "E":
-        direction = Direction.east;
-        break;
-    case "S":
-        direction = Direction.south;
-        break;
-    case "W":
-        direction = Direction.west;
-        break;
-}
-const robot = new Robot(world, new Point(x, y), direction);
-while (true) {
-    const instructionSetup = await rl.question('Command:');
-    const instructions = Array.from(instructionSetup);
-    for (let instruction of instructions) {
+const server = http.createServer(app);
+import { Server } from 'socket.io';
+const io = new Server(server);
+let world = undefined;
+let robot = undefined;
+app.use(express.static('public'));
+io.on('connection', (socket) => {
+    console.log('a user connected');
+    socket.on('initWorld', (w) => {
+        world = new World(w.width, w.depth);
+        socket.emit("update");
+    });
+    socket.on('initRobot', (r) => {
+        let direction = undefined;
+        switch (r.direction) {
+            case "N":
+                direction = Direction.north;
+                break;
+            case "E":
+                direction = Direction.east;
+                break;
+            case "S":
+                direction = Direction.south;
+                break;
+            case "W":
+                direction = Direction.west;
+                break;
+        }
+        robot = new Robot(world, new Point(r.position.x, r.position.y), direction);
+        socket.emit("update", { position: { x: robot.position.x, y: robot.position.y }, direction: Direction[robot.direction] });
+    });
+    socket.on('command', (instruction) => {
         let instr = undefined;
         switch (instruction) {
             case 'R':
@@ -48,13 +50,14 @@ while (true) {
         }
         try {
             robot.receiveCommand(instr);
+            socket.emit("update", { position: { x: robot.position.x, y: robot.position.y }, direction: Direction[robot.direction] });
         }
         catch (error) {
-            console.log(error);
-            break;
+            socket.emit("error", "Cannot go outside the world.");
         }
-    }
-    console.log(`Report: ${robot.position.x} ${robot.position.y} ${Direction[robot.direction][0].toUpperCase()}`);
-}
-rl.close();
+    });
+});
+server.listen(3000, () => {
+    console.log('listening on *:3000');
+});
 //# sourceMappingURL=index.js.map

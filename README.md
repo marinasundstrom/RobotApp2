@@ -2,6 +2,14 @@
 
 [RobotApp](https://github.com/marinasundstrom/RobotApp) ported to TypeScript/JavaScript.
 
+Built with TypeScript, NodeJS, Express, Socket.IO, HTML, Canvas.
+
+## Screenshot
+
+![Screenshet](/images/screenshot.png)
+
+## Development
+
 Latest NodeJS required.
 
 To build:

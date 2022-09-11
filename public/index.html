@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <div id="init" style="margin-bottom: 5px;">
+        <label>
+            Width
+            <input id="input-plane-width" type="number" value="5">
+        </label>
+
+        <label>
+            Depth
+            <input id="input-plane-depth" type="number" value="5">
+        </label>
+
+        <label>
+            X
+            <input id="input-robot-x" type="number" value="2">
+        </label>
+
+        <label>
+            Y
+            <input id="input-robot-y" type="number" value="2">
+        </label>
+
+        <label>
+            Direction
+            <select id="input-robot-direction">
+                <option value="N">North</option>
+                <option value="E">East</option>
+                <option value="S">South</option>
+                <option value="W">West</option>
+            </select>
+        </label>
+
+        <button id="start-button">Start</button>
+    </div>
+
+    <div id="plane">
+        <canvas id="myCanvas" width="200" height="100" style="border:1px solid #000000;"></canvas>
+
+        <div>
+            <button id="leftButton">Left</button>
+            <button id="forwardButton">Forward</button>
+            <button id="rightButton">Right</button>
+        </div>
+    
+        <span id="indicator"></span>
+    </div>
+
+    <script src="js/socket.io.js"></script>
+    <script type="module" lang="javascript">
+        let socket = io();
+
+        let tileSize = 32;
+
+        const inputPlaneWidth = document.getElementById("input-plane-width");
+        const inputPlaneDepth = document.getElementById("input-plane-depth");
+
+        const inputRobotX = document.getElementById("input-robot-x");
+        const inputRobotY = document.getElementById("input-robot-y");
+
+        const startButton = document.getElementById("start-button");
+
+        const inputRobotDirection = document.getElementById("input-robot-direction");
+
+        const leftButton = document.getElementById("leftButton");
+        const forwardButton = document.getElementById("forwardButton");
+        const rightButton = document.getElementById("rightButton");
+
+        const indicator = document.getElementById("indicator");
+
+        const myCanvas = document.getElementById("myCanvas");
+        var ctx = myCanvas.getContext("2d");
+
+        function drawGrid(width, depth) {
+            for(let x1 = 0; x1 < width * 32; x1 += 32)
+            {
+                ctx.moveTo(x1, 0);
+                ctx.lineTo(x1, myCanvas.height);
+                ctx.stroke();
+            }
+
+            for(let y1 = 0; y1 < depth * 32; y1 += 32)
+            {
+                ctx.moveTo(0, y1);
+                ctx.lineTo(myCanvas.width, y1);
+                ctx.stroke();
+            }
+        }
+
+        function draw(x, y, direction) {
+            let img = new Image();
+            img.src = `img/char-${direction}.png`;
+            img.onload = () => {
+                let width = parseInt(inputPlaneWidth.value);
+                let depth = parseInt(inputPlaneDepth.value);
+                ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+                drawGrid(width, depth);
+                ctx.drawImage(img, x * 32, y * 32, 32, 32);
+            };
+        }
+
+        socket.on("update", (r) => {
+            if(r) 
+            {
+                draw(r.position.x, r.position.y, r.direction);
+                indicator.innerText = `${r.position.x} ${r.position.y} ${r.direction}`;
+            }
+            else 
+            {
+                drawGrid();
+            }
+        });
+
+        socket.on("error", (message) => {
+            alert(message);
+        });
+
+        startButton.onclick = () => {
+            let width = parseInt(inputPlaneWidth.value);
+            let depth = parseInt(inputPlaneDepth.value);
+
+            myCanvas.width = width * tileSize;
+            myCanvas.height = depth * tileSize;
+
+            socket.emit('initWorld', { width, depth });
+
+            drawGrid(width, depth);
+
+            let x = parseInt(inputRobotX.value);
+            let y = parseInt(inputRobotY.value);
+
+            let direction = inputRobotDirection.value;
+
+            socket.emit('initRobot', { position: { x, y }, direction });
+        };
+
+        leftButton.onclick = () => {
+            socket.emit('command', "L" );
+        };
+
+        rightButton.onclick = () => {
+            socket.emit('command', "R" );
+        };
+
+        forwardButton.onclick = () => {
+            socket.emit('command', "F" );
+        };
+
+    </script>
+</body>
+</html>
