@@ -101,27 +101,24 @@
             }
         }
 
-        function draw(x, y, direction) {
+        function drawRobot(x, y, direction) {
             let img = new Image();
             img.src = `img/char-${direction}.png`;
             img.onload = () => {
-                let width = parseInt(inputPlaneWidth.value);
-                let depth = parseInt(inputPlaneDepth.value);
-                ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
-                drawGrid(width, depth);
                 ctx.drawImage(img, x * 32, y * 32, 32, 32);
             };
         }
 
         socket.on("update", (r) => {
+            let width = parseInt(inputPlaneWidth.value);
+            let depth = parseInt(inputPlaneDepth.value);
+            ctx.clearRect(0, 0, myCanvas.width, myCanvas.height);
+            drawGrid(width, depth);
+
             if(r) 
             {
-                draw(r.position.x, r.position.y, r.direction);
+                drawRobot(r.position.x, r.position.y, r.direction);
                 indicator.innerText = `${r.position.x} ${r.position.y} ${r.direction}`;
-            }
-            else 
-            {
-                drawGrid();
             }
         });
 
