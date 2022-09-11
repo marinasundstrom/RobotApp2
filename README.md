@@ -8,6 +8,8 @@ It is a client-server app built with TypeScript, NodeJS, Express, Socket.IO, HTM
 
 Just as with the original, there is a console version (index2.ts).
 
+Watch video [here](https://www.youtube.com/watch?v=I5xXol0Nv7Y).
+
 ## Screenshot
 
 ![Screenshet](/images/screenshot.png)
