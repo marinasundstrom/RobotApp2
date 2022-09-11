@@ -4,11 +4,13 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>RobotApp</title>
 </head>
 <body>
 
-    <div id="init" style="margin-bottom: 5px;">
+    <div id="init" style="margin-bottom: 15px;">
+        <h4>World</h4>
+
         <label>
             Width
             <input id="input-plane-width" type="number" value="5">
@@ -18,6 +20,8 @@
             Depth
             <input id="input-plane-depth" type="number" value="5">
         </label>
+
+        <h4>Robot</h4>
 
         <label>
             X
@@ -42,10 +46,10 @@
         <button id="start-button">Start</button>
     </div>
 
-    <div id="plane">
+    <div id="plane" style="visibility: collapse;">
         <canvas id="myCanvas" width="200" height="100" style="border:1px solid #000000;"></canvas>
 
-        <div>
+        <div style="margin-top: 15px; margin-bottom: 15px;">
             <button id="leftButton">Left</button>
             <button id="forwardButton">Forward</button>
             <button id="rightButton">Right</button>
@@ -69,6 +73,8 @@
         const startButton = document.getElementById("start-button");
 
         const inputRobotDirection = document.getElementById("input-robot-direction");
+
+        const plane = document.getElementById("plane");
 
         const leftButton = document.getElementById("leftButton");
         const forwardButton = document.getElementById("forwardButton");
@@ -140,6 +146,8 @@
             let direction = inputRobotDirection.value;
 
             socket.emit('initRobot', { position: { x, y }, direction });
+
+            plane.style.visibility = "visible";
         };
 
         leftButton.onclick = () => {

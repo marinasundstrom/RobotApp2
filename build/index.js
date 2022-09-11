@@ -53,7 +53,7 @@ io.on('connection', (socket) => {
             socket.emit("update", { position: { x: robot.position.x, y: robot.position.y }, direction: Direction[robot.direction] });
         }
         catch (error) {
-            socket.emit("error", "Cannot go outside the world.");
+            socket.emit("error", "Cannot go outside the bounds of the world.");
         }
     });
 });
